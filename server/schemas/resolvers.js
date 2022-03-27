@@ -5,14 +5,19 @@ const { signToken } = require("../utils/auth");
 const resolvers = {
   Query: {
     users: async () => {
-      return User.find().select("-__v -password").populate("savedBooks");
+      return User.find()
+        .select("-__v -password")
+        .populate("savedBooks")
+        .populate("bookCount");
     },
     // get a user by username
     user: async (parent, { username }) => {
       return User.findOne({ username })
         .select("-__v -password")
-        .populate("savedBooks");
+        .populate("savedBooks")
+        .populate("bookCount");
     },
+  },
   Mutation: {
     addUser: async (parent, args) => {
       const user = await User.create(args.user);
@@ -20,20 +25,19 @@ const resolvers = {
 
       return { token, user };
     },
-    login: async (parent, {email, password}) => {
-    const user = await User.findone({email});
-    if (!user) {
-      throw new AuthenticationError('Incorrect credentials');
-    }
+    login: async (parent, { email, password }) => {
+      const user = await User.findOne({ email });
+      if (!user) {
+        throw new AuthenticationError("Incorrect credentials");
+      }
 
-    const correctPassword = await user.isCorrectPassword(password);
-    if (!correctPassword) {
-      throw new AuthenticationError('Incorrect credentials');
-    }
-    const toke = signToken(user, password);
-    return {token, user};
-    }
-  }
+      const correctPassword = await user.isCorrectPassword(password);
+      if (!correctPassword) {
+        throw new AuthenticationError("Incorrect credentials");
+      }
+      const token = signToken(user, password);
+      return { token, user };
+    },
   },
 };
 
