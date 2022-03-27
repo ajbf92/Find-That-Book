@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 
-import { loginUser } from '../utils/API';
+// import { loginUser } from '../utils/API';
 import Auth from '../utils/auth';
 
 import { useMutation } from '@apollo/client';
@@ -39,11 +39,12 @@ const LoginForm = () => {
     //   }
       try {
         const { data } = await login({
-          variables: { ...formState }
+          variables: { ...userFormData }
         });
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
+        console.log(data);
+      // const { token, user } = await response.json();
+      // console.log(user);
+      Auth.login(data.login.token);
     } catch (err) {
       console.error(err);
       setShowAlert(true);
